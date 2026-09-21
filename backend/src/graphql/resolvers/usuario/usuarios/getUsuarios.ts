@@ -42,10 +42,10 @@ const getUsuarios = async (_: unknown, args: GetUsuariosArgs) => {
 
         switch (usuario.rol) {
             case Rol.ADMIN:
-                whereClause.rol = { in: [Rol.ADMIN, Rol.ASISTENTE] };
+                whereClause.rol = { in: [Rol.ADMIN, Rol.EDITOR] };
                 break;
-            case Rol.ASISTENTE:
-                whereClause.rol = Rol.ASISTENTE;
+            case Rol.EDITOR:
+                whereClause.rol = Rol.EDITOR;
                 break;
             default:
                 return errorResponse({ message: "Rol no válido" });

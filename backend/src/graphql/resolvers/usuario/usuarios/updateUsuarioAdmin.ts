@@ -35,9 +35,9 @@ const updateUsuarioAdmin = async (_: any, { usuarioId, primerNombre, primerApell
 
         const { rol: rolUsuario, id: userId } = usuario;
 
-        const { ADMIN, ASISTENTE, CLIENTE } = Rol;
+        const { ADMIN, EDITOR, READER } = Rol;
 
-        if (rolUsuario === CLIENTE) {
+        if (rolUsuario === READER) {
             return errorResponse({ message: 'Usuario no autorizado' });
         }
 
@@ -47,8 +47,8 @@ const updateUsuarioAdmin = async (_: any, { usuarioId, primerNombre, primerApell
             return warningResponse({ message: 'Usuario no encontrado' });
         }
 
-        // ASISTENTE solo puede actualizar usuarios con rol CLIENTE
-        if (rolUsuario === ASISTENTE && usuarioExistente.rol !== CLIENTE) {
+        // ASISTENTE solo puede actualizar usuarios con rol READER
+        if (rolUsuario === EDITOR && usuarioExistente.rol !== READER) {
             return errorResponse({ message: 'Usuario no autorizado para actualizar este rol' });
         }
 
