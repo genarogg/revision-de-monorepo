@@ -32,7 +32,7 @@ const useValidarSesion = () => {
                     return;
                 }
 
-                const res = await fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL as string, {
+                const res = await fetch("/graphql", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
