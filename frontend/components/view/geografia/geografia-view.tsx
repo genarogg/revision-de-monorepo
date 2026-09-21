@@ -44,9 +44,14 @@ export default function GeografiaView() {
     })
       .then((response) => response.json())
       .then((payload) => {
-        const estados = payload.data?.getGeografia?.data?.estados
-        if (estados) {
-          setData((current) => ({ ...current, estados: estados.map((estado: { id: number; nombre: string; activo: boolean }) => ({ id: estado.id, name: estado.nombre, active: estado.activo })) }))
+        const result = payload.data?.getGeografia?.data
+        if (result) {
+          setData({
+            estados: (result.estados ?? []).map((estado: { id: number; nombre: string; activo: boolean }) => ({ id: estado.id, name: estado.nombre, active: estado.activo })),
+            municipios: (result.municipios ?? []).map((item: { id: number; estadoId: number; nombre: string; vigencia: boolean }) => ({ id: item.id, name: item.nombre, parent: `Estado #${item.estadoId}`, active: item.vigencia })),
+            poblados: (result.poblados ?? []).map((item: { id: number; municipioId: number; nombre: string; vigencia: boolean }) => ({ id: item.id, name: item.nombre, parent: `Municipio #${item.municipioId}`, active: item.vigencia })),
+            zonas: (result.zonas ?? []).map((item: { id: number; pobladoId: number; codigoPostal: number; zona: string; vigencia: boolean }) => ({ id: item.id, name: item.zona, parent: `Poblado #${item.pobladoId}`, postal: item.codigoPostal, active: item.vigencia })),
+          })
         }
       })
       .finally(() => setLoading(false))

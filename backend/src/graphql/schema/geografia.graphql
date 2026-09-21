@@ -6,8 +6,33 @@ type Estado {
   updatedAt: Date!
 }
 
+type Municipio {
+  id: Int!
+  estadoId: Int!
+  nombre: String!
+  vigencia: Boolean!
+}
+
+type Poblado {
+  id: Int!
+  municipioId: Int!
+  nombre: String!
+  vigencia: Boolean!
+}
+
+type ZonaUrbanizacion {
+  id: Int!
+  pobladoId: Int!
+  codigoPostal: Int!
+  zona: String!
+  vigencia: Boolean!
+}
+
 type GeografiaData {
   estados: [Estado!]!
+  municipios: [Municipio!]!
+  poblados: [Poblado!]!
+  zonas: [ZonaUrbanizacion!]!
 }
 
 type GeografiaResponse {
@@ -27,7 +52,17 @@ extend type Query {
   getGeografia(token: String!, filtro: String, soloActivos: Boolean): GeografiaResponse
 }
 
+type MunicipioResponse { type: String, message: String, data: Municipio, meta: Meta }
+type PobladoResponse { type: String, message: String, data: Poblado, meta: Meta }
+type ZonaResponse { type: String, message: String, data: ZonaUrbanizacion, meta: Meta }
+
 extend type Mutation {
   createEstado(token: String!, nombre: String!, activo: Boolean): EstadoResponse
   updateEstado(token: String!, id: Int!, nombre: String, activo: Boolean): EstadoResponse
+  createMunicipio(token: String!, estadoId: Int!, nombre: String!, vigencia: Boolean): MunicipioResponse
+  updateMunicipio(token: String!, id: Int!, estadoId: Int, nombre: String, vigencia: Boolean): MunicipioResponse
+  createPoblado(token: String!, municipioId: Int!, nombre: String!, vigencia: Boolean): PobladoResponse
+  updatePoblado(token: String!, id: Int!, municipioId: Int, nombre: String, vigencia: Boolean): PobladoResponse
+  createZona(token: String!, pobladoId: Int!, codigoPostal: Int!, zona: String!, vigencia: Boolean): ZonaResponse
+  updateZona(token: String!, id: Int!, pobladoId: Int, codigoPostal: Int, zona: String, vigencia: Boolean): ZonaResponse
 }
