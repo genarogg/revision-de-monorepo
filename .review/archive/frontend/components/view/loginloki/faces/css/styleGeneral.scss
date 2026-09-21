@@ -1,0 +1,280 @@
+@mixin height($size) {
+    height: $size;
+    min-height: $size;
+    max-height: $size;
+}
+
+@mixin width($size) {
+    width: $size;
+    min-width: $size;
+    max-width: $size;
+}
+
+@mixin center-x {
+    display: flex;
+    justify-content: center;
+}
+
+@supports (-moz-appearance: none) {
+    .container-form-loki {
+        backface-visibility: hidden;
+    }
+}
+
+/* Logica para voltear la tarjeta */
+
+.super-container-loki{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+}
+
+.container-form-loki {
+    @include center-x;
+    height: 630px;
+    position: relative;
+    transform: rotateY(0deg);
+    transform-style: preserve-3d;
+    transition: 1s all ease-in-out;
+    width: 360px;
+    z-index: 2;
+
+    .btn-submit-basic {
+        margin-top: 30px;
+    }
+
+    // .container-input {
+    //     margin-bottom: 40px;
+    // }
+
+    .checkbox-container {
+        margin-top: -10px;
+        margin-bottom: 0px;
+    }
+
+    .reboot-password {
+
+        @include height(400px);
+
+
+        .title {
+            display: flex;
+
+            justify-items: center;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            align-content: center;
+
+            margin-top: 20px;
+            margin-bottom: 35px;
+            color: #3d65fd;
+            width: 100%;
+
+            p {
+                color: #3d65fd;
+                cursor: pointer;
+                font-size: 18px;
+                font-weight: 600;
+            }
+        }
+
+        .btn-back-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            width: 100%;
+
+            .btn-back-loki {
+                align-items: center;
+                background: none;
+                border: none;
+                color: #3d65fd;
+                cursor: pointer;
+                display: flex;
+                font-size: 14px;
+                font-weight: 600;
+                gap: 8px;
+                opacity: 0.7;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    opacity: 1;
+                    transform: translateX(-4px);
+                }
+
+                svg {
+                    font-size: 18px;
+                }
+            }
+        }
+    }
+
+    // .redesSocialesAnimadas {
+    //     margin-top: 10px;
+    //     margin-bottom: 30px;
+    // }
+
+    .btn-text.reset {
+        margin-top: 30px;
+    }
+
+    &.right-active {
+        transform: rotateY(180deg);
+
+        &.active {
+            .right {
+                animation: colorChange 1s forwards;
+            }
+        }
+
+        .front {
+            z-index: 1;
+        }
+
+        .right {
+            @include height(880px);
+            border: rgba(#1c1c1c, 0.5);
+            transition: all ease 1.6s;
+            z-index: 4;
+
+            form {
+                .input-wrapper:nth-child(7) {
+                    margin-bottom: 0px;
+                }
+            }
+
+            &.social {
+                @include height(880px);
+            }
+        }
+    }
+
+    &.front-active {
+        transform: rotateY(0deg);
+
+        &.active {
+            .front {
+                animation: colorChange 1s forwards;
+            }
+        }
+
+        .front {
+            border: 1px solid #fff;
+            transition: all ease 1.6s;
+            z-index: 4;
+        }
+
+        .right {
+            z-index: 1;
+        }
+    }
+
+    &.left-active {
+        transform: rotateY(-180deg);
+
+        &.active {
+            .left {
+                animation: colorChange 1s forwards;
+            }
+        }
+
+        .left {
+            border: 1px solid #fff;
+            transition: all ease 1.6s;
+            z-index: 4;
+        }
+
+        .right {
+            display: none;
+            z-index: 1;
+        }
+    }
+
+    .login,
+    .register,
+    .left {
+        @include width(440px);
+
+        align-items: center;
+        border: 1px solid #fff;
+        border-radius: 6px;
+        box-shadow: 0px 0 30px rgba(#012a70, 0.1);
+        display: flex;
+        flex-direction: column;
+        padding: 40px;
+        padding-top: 30px;
+        width: 100%;
+
+        .text-recovery {
+            background-color: transparent;
+            border: none;
+            color: #1c1c1c;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            max-width: 333px;
+            outline: none;
+            transition: all ease 500ms;
+            margin-top: 20px
+        }
+    }
+
+    .front {
+        @include height(480px);
+        position: absolute;
+        backface-visibility: hidden;
+
+        &.social {
+            @include height(520px);
+        }
+    }
+
+    .right {
+        @include height(450px);
+        backface-visibility: hidden;
+        overflow: hidden;
+        position: absolute;
+        transform: rotateY(180deg);
+        transition: all ease 0.8s;
+    }
+
+    .left {
+        @include height(340px);
+        backface-visibility: hidden;
+        display: none;
+        overflow: hidden;
+        position: absolute;
+        transform: rotateY(-180deg);
+        transition: all ease 0.8s;
+
+
+    }
+
+    .icon {
+        font-size: 20px;
+    }
+
+    form {
+        @include center-x;
+        display: grid;
+        // gap: 40px;
+        grid-template-columns: 1fr;
+    }
+}
+
+@keyframes colorChange {
+    0% {
+        border-color: #fff;
+    }
+
+    50% {
+        border-color: #3d65fd;
+    }
+
+    100% {
+        border-color: #fff;
+    }
+}

@@ -1,0 +1,122 @@
+{
+  "estados": [
+    {
+      "id": 1,
+      "name": "Aguascalientes",
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Baja California",
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Campeche",
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Chiapas",
+      "active": false
+    },
+    {
+      "id": 5,
+      "name": "Ciudad de México",
+      "active": true
+    },
+    {
+      "id": 6,
+      "name": "Jalisco",
+      "active": true
+    }
+  ],
+  "municipios": [
+    {
+      "id": 101,
+      "name": "Aguascalientes",
+      "parent": "Aguascalientes",
+      "active": true
+    },
+    {
+      "id": 102,
+      "name": "Mexicali",
+      "parent": "Baja California",
+      "active": true
+    },
+    {
+      "id": 103,
+      "name": "Campeche",
+      "parent": "Campeche",
+      "active": true
+    },
+    {
+      "id": 104,
+      "name": "Tuxtla Gutiérrez",
+      "parent": "Chiapas",
+      "active": false
+    },
+    {
+      "id": 105,
+      "name": "Guadalajara",
+      "parent": "Jalisco",
+      "active": true
+    }
+  ],
+  "poblados": [
+    {
+      "id": 201,
+      "name": "Centro",
+      "parent": "Aguascalientes / Aguascalientes",
+      "active": true
+    },
+    {
+      "id": 202,
+      "name": "San Marcos",
+      "parent": "Aguascalientes / Aguascalientes",
+      "active": true
+    },
+    {
+      "id": 203,
+      "name": "El Refugio",
+      "parent": "Aguascalientes / Aguascalientes",
+      "active": true
+    },
+    {
+      "id": 204,
+      "name": "La Paz",
+      "parent": "Aguascalientes / Aguascalientes",
+      "active": false
+    }
+  ],
+  "zonas": [
+    {
+      "id": 301,
+      "name": "Zona Centro",
+      "parent": "Centro / Aguascalientes",
+      "postal": 20000,
+      "active": true
+    },
+    {
+      "id": 302,
+      "name": "Zona Norte",
+      "parent": "Centro / Aguascalientes",
+      "postal": 20010,
+      "active": true
+    },
+    {
+      "id": 303,
+      "name": "Zona Industrial",
+      "parent": "Centro / Aguascalientes",
+      "postal": 21390,
+      "active": true
+    },
+    {
+      "id": 304,
+      "name": "Zona Histórica",
+      "parent": "Centro / Aguascalientes",
+      "postal": 24000,
+      "active": false
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "monorepo",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "description": "Monorepo con Turborepo: Astro (docs), React.js (frontend) y Fastify (backend).",
+  "engines": {
+    "node": "24"
+  },
+  "workspaces": [
+    "lib",
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "pnpm run sync:env && turbo run build --filter=backend --filter=frontend --filter=docs",
+    "start": "turbo run start",
+    "----- lib -----": "------------------------------------------",
+    "publicar": "cd lib && pnpm run publicar",
+    "build:lib": "cd lib && pnpm build:lib",
+    "----- Global -----": "---------------------------------------",
+    "clean:install": "node ./script/clean.js && pnpm install && pnpm run build:lib && pnpm run sync:global && pnpm run sync:env && cd backend && npx prisma generate",
+    "sync:global": "node ./script/syncToModules.js",
+    "sync:env": "node ./script/envPropagation.js",
+    "----- docker -----": "---------------------------------------",
+    "db:up": "docker compose -f docker-compose-pg.yaml up -d",
+    "----- sync -----": "-----------------------------------------",
+    "sync:deps": "node ./script/syncDependencies.js",
+    "codegen": "cd backend && pnpm run codegen && cd.. && pnpm run sync:global",
+    "----- zip ------": "-----------------------------------------",
+    "zip": "node script/zip-proyect.js",
+    "zip:back": "node script/zip-proyect.js ./backend backend.zip",
+    "zip:front": "node script/zip-proyect.js ./frontend frontend.zip"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.8.0",
+    "archiver": "^7.0.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dotenv": "17.4.2",
+    "graphql": "^17.0.2",
+    "ignore": "^7.0.6",
+    "lucide-react": "^1.47.0",
+    "next": "16.3.3",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-google-recaptcha-v4": "^2.0.2",
+    "react-icons": "^5.7.0",
+    "sass": "^1.104.1",
+    "sonner": "^2.0.8",
+    "tailwind-merge": "^3.7.0",
+    "turbo": "2.9.16",
+    "zustand": "^5.0.15"
+  },
+  "packageManager": "pnpm@12.3.4"
+}
