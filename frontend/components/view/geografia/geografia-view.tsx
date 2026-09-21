@@ -36,6 +36,12 @@ export default function GeografiaView() {
   }, [])
   const [filter, setFilter] = useState<"todos" | "vigentes" | "inactivos">("todos")
   const [dark, setDark] = useState(false)
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark)
+    document.documentElement.classList.toggle("light", !dark)
+  }, [dark])
+
   const [form, setForm] = useState(false)
   const [editing, setEditing] = useState<Row | null>(null)
   const [name, setName] = useState("")

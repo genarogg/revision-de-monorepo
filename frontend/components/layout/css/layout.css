@@ -30,6 +30,18 @@
   top: 0;
   z-index: 1000;
 }
+.dark .clean.containerAll {
+  background-color: var(--background);
+  background-image: none;
+}
+.dark .clean.containerAll > header,
+.dark .clean.containerAll > footer {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+.dark .clean.containerAll > main {
+  background-color: var(--background);
+}
 .clean.containerAll > main {
   display: flex;
   justify-content: center;
