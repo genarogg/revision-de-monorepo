@@ -1,0 +1,29 @@
+
+
+@mixin center-x {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-text {
+  @include center-x;
+
+  button {
+    background-color: transparent;
+    border: none;
+    color: #3d65fd;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    outline: none;
+    transition: all ease 500ms;
+    span {
+      text-decoration: none;
+    }
+
+    &:active {
+      color: #3d65fd;
+      transform: scale(0.9);
+    }
+  }
+}

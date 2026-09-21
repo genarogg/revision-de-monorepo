@@ -1,11 +1,13 @@
-pmOnFail: ignore
-
-minimumReleaseAgeExclude:
-  - '@next/*'
-  - next
-
+packages:
+  - frontend
+  - backend
+  - lib
 allowBuilds:
-  '@parcel/watcher': set this to true or false
-  esbuild: set this to true or false
-  msgpackr-extract: set this to true or false
-  workerd: set this to true or false
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  argon2: true
+  better-sqlite3: true
+  esbuild: true
+  msgpackr-extract: true
+  prisma: true
+  workerd: true

@@ -1,0 +1,88 @@
+##############################################
+# Tipos de Usuario
+##############################################
+
+type Usuario {
+  id: Int!
+  primerNombre: String!
+  primerApellido: String!
+  telefono: String!
+  cedula: String!
+  email: String!
+  rol: Rol!
+  token: String!
+  avatar: String
+}
+
+##############################################
+# Responses de Usuario
+##############################################
+
+type UsuarioResponse {
+  type: String
+  message: String
+  data: Usuario
+}
+
+type UsuariosResponse {
+  type: String
+  message: String
+  data: [Usuario]
+  meta: Meta
+}
+
+##############################################
+# Extensiones de Query y Mutation
+##############################################
+
+extend type Query {
+  validarSesion(token: String!): UsuarioResponse!
+  getUsuarios(token: String!, filtro: String): UsuariosResponse!
+  getMyUsuario(token: String!): UsuarioResponse!
+}
+
+extend type Mutation {
+  registerUsuario(
+    token: String
+    primerNombre: String!
+    primerApellido: String!
+    telefono: String!
+    cedula: String!
+    email: String!
+    password: String!
+    captchaToken: String
+  ): UsuarioResponse!
+
+  loginUsuario(
+    email: String!
+    password: String!
+    captchaToken: String
+  ): UsuarioResponse!
+
+  resetSendEmail(email: String!): NotificacionResponse!
+
+  resetPassWithToken(token: String!, nuevaContrasena: String!): UsuarioResponse!
+
+  updateMyUsuario(
+    token: String!
+    primerNombre: String
+    primerApellido: String
+    telefono: String
+    cedula: String
+    email: String
+    password: String
+    avatar: String
+  ): UsuarioResponse!
+
+  updateUsuarioAdmin(
+    token: String!
+    primerNombre: String
+    primerApellido: String
+    telefono: String
+    cedula: String
+    email: String
+    password: String
+    rol: Rol
+    usuarioId: Int!
+  ): UsuarioResponse!
+}

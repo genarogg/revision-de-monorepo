@@ -1,0 +1,48 @@
+.btn-normal-basic {
+  display: flex;
+  justify-content: center;
+  height: 42px;
+  position: relative;
+  width: 100%;
+
+  &,
+  * {
+    transition: 500ms ease all;
+  }
+
+  button {
+    background-color: transparent;
+    border: 1px solid rgba(28, 28, 28, 0.5);
+    border-radius: 6px;
+
+    color: #ffac32;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    height: 100%;
+    max-width: calc(333px / 1.5);
+    outline: none;
+    position: relative;
+    width: 100%;
+
+    &:active {
+      background-color: #ffac32;
+      transform: scale(0.9);
+      color: #fff;
+    }
+
+    &:disabled {
+      background-color: #ffac32;
+    }
+
+    &:focus {
+      background-color: #ffac32;
+      color: #fff;
+    }
+
+    &:hover {
+      background-color: #ffac32;
+      color: #fff;
+    }
+  }
+}
