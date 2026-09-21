@@ -86,7 +86,7 @@ import routerWorkes from '@/test/workes/router';
       ["semilla", chalk.cyan(semilla as string)],
       ["PRODUCTION", chalk.cyan(PRODUCTIONS + "")],
     )
-
+console.log("reinicio")
     console.log(tableURL.toString());
     console.log(tableInfo.toString());
   } catch (err) {
