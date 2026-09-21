@@ -47,6 +47,10 @@
   justify-content: center;
   align-items: center;
 }
+.clean.containerAll > main > * {
+  width: 100%;
+  max-width: 1250px;
+}
 .clean.containerAll > footer {
   background-color: #fff;
   color: #fff;
