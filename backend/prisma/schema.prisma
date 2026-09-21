@@ -20,7 +20,16 @@ datasource db {
   provider = "postgresql"
 }
 
+model Estado {
+  id        Int      @id @default(autoincrement())
+  nombre    String   @unique
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Usuario {
+
   id             Int        @id @default(autoincrement())
   primerNombre   String
   primerApellido String

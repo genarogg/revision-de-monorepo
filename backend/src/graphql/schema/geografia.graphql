@@ -1,0 +1,33 @@
+type Estado {
+  id: Int!
+  nombre: String!
+  activo: Boolean!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+type GeografiaData {
+  estados: [Estado!]!
+}
+
+type GeografiaResponse {
+  type: String
+  message: String
+  data: GeografiaData
+  meta: Meta
+}
+
+type EstadoResponse {
+  type: String
+  message: String
+  data: Estado
+}
+
+extend type Query {
+  getGeografia(token: String!, filtro: String, soloActivos: Boolean): GeografiaResponse
+}
+
+extend type Mutation {
+  createEstado(token: String!, nombre: String!, activo: Boolean): EstadoResponse
+  updateEstado(token: String!, id: Int!, nombre: String, activo: Boolean): EstadoResponse
+}
