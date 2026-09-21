@@ -153,6 +153,107 @@
   }
 }
 
+.light {
+  color-scheme: light;
+  --background: oklch(0.975 0.012 250);
+  --foreground: oklch(0.23 0.025 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.23 0.025 255);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.23 0.025 255);
+  --primary: oklch(0.32 0.07 255);
+  --primary-foreground: oklch(0.98 0.01 250);
+  --secondary: oklch(0.93 0.025 250);
+  --secondary-foreground: oklch(0.28 0.05 255);
+  --muted: oklch(0.955 0.018 250);
+  --muted-foreground: oklch(0.52 0.035 255);
+  --border: oklch(0.88 0.025 250);
+  --input: oklch(0.88 0.025 250);
+  --accent: oklch(0.94 0.035 250);
+  --accent-foreground: oklch(0.25 0.05 255);
+  --ring: oklch(0.55 0.08 255);
+}
+
+.light .geografia-table thead {
+  background: oklch(0.95 0.025 250);
+}
+
+.light .geografia-table tbody tr {
+  background: var(--card);
+  border-color: oklch(0.89 0.025 250);
+}
+
+.light .geografia-table tbody tr:nth-child(even) {
+  background: oklch(0.965 0.018 250);
+}
+
+.light .geografia-table tbody tr:hover,
+.light .geografia-table tbody tr:nth-child(even):hover {
+  background: oklch(0.985 0.012 250);
+}
+
+.dark .geografia-table tbody tr:nth-child(even) {
+  background: color-mix(in oklch, var(--muted) 42%, var(--card));
+}
+
+.dark .geografia-table tbody tr:hover,
+.dark .geografia-table tbody tr:nth-child(even):hover {
+  background: color-mix(in oklch, var(--muted) 68%, var(--card));
+}
+
+@media (max-width: 639px) {
+  .geografia-table thead {
+    display: none;
+  }
+
+  .geografia-table,
+  .geografia-table tbody,
+  .geografia-table tr,
+  .geografia-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .geografia-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .geografia-table tr {
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--card);
+    padding: 0.75rem 1rem;
+  }
+
+  .geografia-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 0;
+    padding: 0.55rem 0;
+    text-align: right;
+  }
+
+  .geografia-table td::before {
+    content: attr(data-label);
+    color: var(--muted-foreground);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .geografia-table td:last-child {
+    border-top: 1px solid var(--border);
+    margin-top: 0.25rem;
+    padding-top: 0.75rem;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
