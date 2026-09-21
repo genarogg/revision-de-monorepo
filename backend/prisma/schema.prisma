@@ -28,6 +28,52 @@ model Estado {
   updatedAt DateTime @updatedAt
 }
 
+model EstadoPais {
+  id         Int         @id @default(autoincrement())
+  estado     String
+  vigencia   Boolean     @default(true)
+  municipios Municipio[]
+
+  @@map("estado_pais")
+}
+
+model Municipio {
+  id        Int        @id @default(autoincrement())
+  estadoId  Int
+  nombre    String
+  vigencia  Boolean    @default(true)
+  estado    EstadoPais @relation(fields: [estadoId], references: [id])
+  poblados  Poblado[]
+
+  @@index([estadoId])
+  @@map("municipio")
+}
+
+model Poblado {
+  id                 Int               @id @default(autoincrement())
+  municipioId        Int
+  nombre             String
+  vigencia           Boolean           @default(true)
+  municipio          Municipio         @relation(fields: [municipioId], references: [id])
+  zonasUrbanizacion  ZonaUrbanizacion[]
+
+  @@index([municipioId])
+  @@map("poblado")
+}
+
+model ZonaUrbanizacion {
+  id           Int      @id @default(autoincrement())
+  pobladoId    Int
+  codigoPostal Int
+  zona         String
+  vigencia     Boolean  @default(true)
+  poblado      Poblado  @relation(fields: [pobladoId], references: [id])
+
+  @@index([pobladoId])
+  @@index([codigoPostal])
+  @@map("zona_urbanizacion")
+}
+
 model Usuario {
 
   id             Int        @id @default(autoincrement())
