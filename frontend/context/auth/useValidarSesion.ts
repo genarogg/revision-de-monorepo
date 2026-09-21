@@ -68,8 +68,9 @@ const useValidarSesion = () => {
                 }
 
             } catch (err) {
-                console.error(err);
+                console.error("[v0] Error validando sesión:", err);
                 logout();
+            } finally {
                 setLoading(false);
             }
         };
