@@ -3,6 +3,9 @@
 import { useEffect, useMemo, useState } from "react"
 import { Building2, Home, Map, MapPinned, Moon, Pencil, Plus, Power, Search, Sun, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAuthStore } from "@/context/auth/AuthContext"
+import GET_GEOGRAFIA from "@/query/geografia/GET_GEOGRAFIA"
+import { CREATE_ESTADO, UPDATE_ESTADO } from "@/query/geografia/ESTADOS"
 
 type Tab = "estados" | "municipios" | "poblados" | "zonas"
 type Row = { id: number; name: string; parent?: string; postal?: number; active: boolean }
@@ -25,15 +28,29 @@ export default function GeografiaView() {
   const [tab, setTab] = useState<Tab>("estados")
   const [data, setData] = useState(initial)
   const [loading, setLoading] = useState(true)
-  const apiToken = "geo-admin-token-2026"
+  const token = useAuthStore((state) => state.token)
   const [search, setSearch] = useState("")
 
   useEffect(() => {
-    fetch("/api/geografia", { headers: { Authorization: `Bearer ${apiToken}` } })
+    if (!token) {
+      setLoading(false)
+      return
+    }
+
+    fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: GET_GEOGRAFIA.loc?.source.body, variables: { token } }),
+    })
       .then((response) => response.json())
-      .then((payload) => { if (payload.data) setData(payload.data) })
+      .then((payload) => {
+        const estados = payload.data?.getGeografia?.data?.estados
+        if (estados) {
+          setData((current) => ({ ...current, estados: estados.map((estado: { id: number; nombre: string; activo: boolean }) => ({ id: estado.id, name: estado.nombre, active: estado.activo })) }))
+        }
+      })
       .finally(() => setLoading(false))
-  }, [])
+  }, [token])
   const [filter, setFilter] = useState<"todos" | "vigentes" | "inactivos">("todos")
   const [dark, setDark] = useState(false)
 
@@ -50,13 +67,22 @@ export default function GeografiaView() {
   const rows = useMemo(() => data[tab].filter((row) => row.name.toLowerCase().includes(search.toLowerCase()) && (filter === "todos" || (filter === "vigentes" ? row.active : !row.active))), [data, tab, search, filter])
   const activeCount = (key: Tab) => data[key].filter((row) => row.active).length
   const save = async () => {
-    if (!name.trim()) return
-    const response = await fetch("/api/geografia", { method: editing ? "PATCH" : "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiToken}` }, body: JSON.stringify(editing ? { tab, id: editing.id, patch: { name: name.trim() } } : { tab, name: name.trim(), parent: tab === "estados" ? undefined : "Sin asignar", active: true }) })
+    if (!name.trim() || !token || tab !== "estados") return
+    const mutation = editing ? UPDATE_ESTADO : CREATE_ESTADO
+    const variables = editing ? { token, id: editing.id, nombre: name.trim() } : { token, nombre: name.trim(), activo: true }
+    const response = await fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: mutation.loc?.source.body, variables }),
+    })
     const payload = await response.json()
-    if (!response.ok) return
-    setData((all) => ({ ...all, [tab]: editing ? all[tab].map((row) => row.id === editing.id ? payload.data : row) : [...all[tab], payload.data] }))
+    const estado = payload.data?.[editing ? "updateEstado" : "createEstado"]?.data
+    if (!estado) return
+    const row = { id: estado.id, name: estado.nombre, active: estado.activo }
+    setData((all) => ({ ...all, estados: editing ? all.estados.map((item) => item.id === row.id ? row : item) : [...all.estados, row] }))
     setForm(false)
     setEditing(null)
+    setName("")
   }
   const open = (row?: Row) => { setEditing(row ?? null); setName(row?.name ?? ""); setForm(true) }
   const close = () => { setForm(false); setEditing(null); setName("") }
@@ -66,7 +92,7 @@ export default function GeografiaView() {
     <main className="mx-auto max-w-[1440px] px-5 py-8 lg:px-8"><div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end"><div><p className="mb-2 text-sm text-muted-foreground">Configuración / <span className="text-foreground">Geografía</span></p><h2 className="text-3xl font-semibold tracking-tight text-foreground">Geografía</h2><p className="mt-1 text-muted-foreground">Administra los catálogos territoriales del municipio.</p></div><div className="flex items-center gap-2"><span className="rounded-full border bg-card px-3 py-2 text-xs text-muted-foreground">Datos de ejemplo</span><Button onClick={() => open()}><Plus data-icon="inline-start" /> Nuevo {current.singular}</Button></div></div>
       <div className="mb-5 grid grid-cols-2 gap-2.5 sm:mb-7 sm:grid-cols-2 sm:gap-3 xl:grid-cols-4">{(Object.keys(labels) as Tab[]).map((key) => { const CardIcon = labels[key].icon; return <button key={key} onClick={() => { setTab(key); setSearch(""); setFilter("todos") }} className={`rounded-xl border bg-card p-3 text-left transition hover:shadow-md sm:p-4 ${tab === key ? "border-primary/50 ring-1 ring-primary/20" : ""}`}><div className="flex items-center justify-between"><span className={`flex size-8 items-center justify-center rounded-lg sm:size-9 ${tab === key ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}><CardIcon /></span><span className="text-xl font-semibold text-card-foreground sm:text-2xl">{activeCount(key)}</span></div><p className="mt-2.5 truncate text-xs font-medium text-card-foreground sm:mt-4 sm:text-sm">{labels[key].plural}</p><p className="truncate text-[11px] text-muted-foreground sm:text-xs">registros vigentes</p></button> })}</div>
       <section className="overflow-hidden rounded-xl border bg-card shadow-sm"><div className="flex flex-col justify-between gap-4 border-b p-5 lg:flex-row lg:items-center"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-lg bg-secondary"><Icon /></span><div><h3 className="font-semibold text-card-foreground">{current.plural}</h3><p className="text-sm text-muted-foreground">{current.description}</p></div></div><div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-end"><div className="relative"><Search className="absolute left-3 top-2.5 text-muted-foreground" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={`Buscar ${current.singular.toLowerCase()}...`} className="h-10 w-full rounded-lg border bg-background pl-9 pr-3 text-sm sm:w-64" /></div><div className="flex rounded-lg border p-1">{(["todos", "vigentes", "inactivos"] as const).map((value) => <button key={value} onClick={() => setFilter(value)} className={`rounded-md px-3 py-1.5 text-xs ${filter === value ? "bg-primary text-primary-foreground font-medium" : "text-muted-foreground"}`}>{value[0].toUpperCase() + value.slice(1)}</button>)}</div></div></div>
-        <div className="overflow-x-auto p-3 sm:p-0"><table className="geografia-table w-full font-nunito text-sm"><thead className="bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">{current.singular}</th>{tab !== "estados" && <th className="px-5 py-3">Registro superior</th>}{tab === "zonas" && <th className="px-5 py-3">Código postal</th>}<th className="px-5 py-3">Vigencia</th><th className="px-5 py-3 text-right">Acciones</th></tr></thead><tbody className="divide-y [&>tr:nth-child(even)]:bg-muted/20">{rows.map((row) => <tr key={row.id} className="hover:bg-muted/30"><td data-label="ID" className="px-5 py-4 font-mono text-xs text-muted-foreground">#{row.id}</td><td data-label={current.singular} className="px-5 py-4 font-medium text-foreground">{row.name}</td>{tab !== "estados" && <td data-label="Registro superior" className="px-5 py-4 text-muted-foreground">{row.parent}</td>}{tab === "zonas" && <td data-label="Código postal" className="px-5 py-4 text-muted-foreground">{row.postal}</td>}<td data-label="Vigencia" className="px-5 py-4"><button type="button" role="switch" aria-checked={row.active} onClick={async () => { const active = !row.active; const response = await fetch("/api/geografia", { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiToken}` }, body: JSON.stringify({ tab, id: row.id, patch: { active } }) }); if (response.ok) { const payload = await response.json(); setData((all) => ({ ...all, [tab]: all[tab].map((item) => item.id === row.id ? payload.data : item) })) } }} aria-label={`${row.active ? "Desactivar" : "Activar"} ${row.name}`} className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${row.active ? "border-emerald-200 bg-emerald-100 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300" : "border-border bg-muted text-muted-foreground"}`}><span className={`flex size-5 items-center justify-center rounded-full ${row.active ? "bg-emerald-600 text-white" : "bg-muted-foreground/30 text-muted-foreground"}`}><Power /></span>{row.active ? "Vigente" : "Inactivo"}</button></td><td data-label="Acciones" className="px-5 py-4 text-right"><Button variant="ghost" size="icon" className="text-slate-700 hover:text-slate-950 dark:text-foreground dark:hover:text-foreground" onClick={() => open(row)} aria-label={`Editar ${row.name}`}><Pencil /></Button></td></tr>)}</tbody></table></div>
+        <div className="overflow-x-auto p-3 sm:p-0"><table className="geografia-table w-full font-nunito text-sm"><thead className="bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground"><tr><th className="px-5 py-3">ID</th><th className="px-5 py-3">{current.singular}</th>{tab !== "estados" && <th className="px-5 py-3">Registro superior</th>}{tab === "zonas" && <th className="px-5 py-3">Código postal</th>}<th className="px-5 py-3">Vigencia</th><th className="px-5 py-3 text-right">Acciones</th></tr></thead><tbody className="divide-y [&>tr:nth-child(even)]:bg-muted/20">{rows.map((row) => <tr key={row.id} className="hover:bg-muted/30"><td data-label="ID" className="px-5 py-4 font-mono text-xs text-muted-foreground">#{row.id}</td><td data-label={current.singular} className="px-5 py-4 font-medium text-foreground">{row.name}</td>{tab !== "estados" && <td data-label="Registro superior" className="px-5 py-4 text-muted-foreground">{row.parent}</td>}{tab === "zonas" && <td data-label="Código postal" className="px-5 py-4 text-muted-foreground">{row.postal}</td>}<td data-label="Vigencia" className="px-5 py-4"><button type="button" role="switch" aria-checked={row.active} onClick={async () => { if (!token || tab !== "estados") return; const active = !row.active; const response = await fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "/graphql", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: UPDATE_ESTADO.loc?.source.body, variables: { token, id: row.id, activo: active } }) }); const payload = await response.json(); const estado = payload.data?.updateEstado?.data; if (estado) { const updated = { id: estado.id, name: estado.nombre, active: estado.activo }; setData((all) => ({ ...all, estados: all.estados.map((item) => item.id === row.id ? updated : item) })) } }} aria-label={`${row.active ? "Desactivar" : "Activar"} ${row.name}`} className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${row.active ? "border-emerald-200 bg-emerald-100 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300" : "border-border bg-muted text-muted-foreground"}`}><span className={`flex size-5 items-center justify-center rounded-full ${row.active ? "bg-emerald-600 text-white" : "bg-muted-foreground/30 text-muted-foreground"}`}><Power /></span>{row.active ? "Vigente" : "Inactivo"}</button></td><td data-label="Acciones" className="px-5 py-4 text-right"><Button variant="ghost" size="icon" className="text-slate-700 hover:text-slate-950 dark:text-foreground dark:hover:text-foreground" onClick={() => open(row)} aria-label={`Editar ${row.name}`}><Pencil /></Button></td></tr>)}</tbody></table></div>
         {rows.length === 0 && <p className="p-10 text-center text-sm text-muted-foreground">No hay registros que coincidan con la búsqueda.</p>}
       </section>
     </main>
