@@ -10,8 +10,6 @@ const useValidarSesion = () => {
     const hasRun = useRef(false);
     const navigate = useRouter();
     const location = usePathname();
-    const pendingLogin = useRef<{ usuario: Usuario | null; token: string } | null>(null);
-
     // Efecto para validar sesión
     useEffect(() => {
         if (hasRun.current) return;
@@ -32,7 +30,8 @@ const useValidarSesion = () => {
                     return;
                 }
 
-                const res = await fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL as string, {
+                const graphqlUrl = process.env.NEXT_PUBLIC_GRAPHQL_URL || "/graphql";
+                const res = await fetch(graphqlUrl, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -58,19 +57,14 @@ const useValidarSesion = () => {
                     ...datos
                 }
 
-                // Guardamos temporalmente para login posterior
-                pendingLogin.current = { usuario, token };
+                setLogin({
+                    usuario,
+                    token,
+                });
 
                 // Si estamos en la página de inicio, redirigimos
                 if (location === "/") {
                     navigate.push("/dashboard");
-                }
-
-                else {
-                    setLogin({
-                        usuario,
-                        token
-                    });
                 }
 
             } catch (err) {
@@ -83,12 +77,7 @@ const useValidarSesion = () => {
         validar();
     }, []);
 
-    useEffect(() => {
-        if (pendingLogin.current && location === "/dashboard") {
-            setLogin(pendingLogin.current);
-            pendingLogin.current = null;
-        }
-    }, [location, setLogin]);
+
 };
 
 export default useValidarSesion;
