@@ -36,6 +36,9 @@ const Layout: React.FC<LayoutProps> = ({
     // Si es ruta dashboard, mostramos spinner mientras loading o isAuthenticated=false
     const showSpinner = isDashboardRoute ? loading || !isAuthenticated : loading;
 
+    console.log(showSpinner,isDashboardRoute, loading, isAuthenticated )
+    
+
     return (
         <div className={`containerAll clean ${where}`}>
             {showSpinner ? (
