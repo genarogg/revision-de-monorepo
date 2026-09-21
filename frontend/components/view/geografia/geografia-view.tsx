@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Building2, Home, Map, Moon, Pencil, Plus, Power, Search, Sun, X } from "lucide-react"
+import { Building2, Home, Map, MapPinned, Moon, Pencil, Plus, Power, Search, Sun, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 type Tab = "estados" | "municipios" | "poblados" | "zonas"
