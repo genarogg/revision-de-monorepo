@@ -49,6 +49,9 @@ const Header: React.FC<HeaderProps> = () => {
         { href: "/dashboard/bitacora", label: "Bitácora", visible: isAuthenticated, role: [ADMIN] },
         { href: "/dashboard/usuarios", label: "Usuarios", visible: isAuthenticated, role: [ADMIN, READER] },
 
+
+        { href: "/geografia", label: "Geografía", visible: isAuthenticated },
+
         { href: "/", label: "salir", onClick: () => { realLogOut() }, visible: isAuthenticated }
     ];
 
