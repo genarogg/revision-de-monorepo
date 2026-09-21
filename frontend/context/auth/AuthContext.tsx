@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>()(
             ),
 
         logout: () => {
-            localStorage.removeItem("token");
+            // localStorage.removeItem("token");
             set(
                 {
                     usuario: null,
