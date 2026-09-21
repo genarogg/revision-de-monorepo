@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/context/auth/AuthContext"
 import GET_GEOGRAFIA from "@/query/geografia/GET_GEOGRAFIA"
 import { CREATE_ESTADO, UPDATE_ESTADO } from "@/query/geografia/ESTADOS"
+import { CREATE_MUNICIPIO, UPDATE_MUNICIPIO } from "@/query/geografia/MUNICIPIOS"
 
 type Tab = "estados" | "municipios" | "poblados" | "zonas"
 type Row = { id: number; name: string; parent?: string; postal?: number; active: boolean }
@@ -67,30 +68,44 @@ export default function GeografiaView() {
   const [form, setForm] = useState(false)
   const [editing, setEditing] = useState<Row | null>(null)
   const [name, setName] = useState("")
+  const [estadoId, setEstadoId] = useState("")
   const current = labels[tab]
   const Icon = current.icon
   const rows = useMemo(() => data[tab].filter((row) => row.name.toLowerCase().includes(search.toLowerCase()) && (filter === "todos" || (filter === "vigentes" ? row.active : !row.active))), [data, tab, search, filter])
   const activeCount = (key: Tab) => data[key].filter((row) => row.active).length
   const save = async () => {
-    if (!name.trim() || !token || tab !== "estados") return
-    const mutation = editing ? UPDATE_ESTADO : CREATE_ESTADO
-    const variables = editing ? { token, id: editing.id, nombre: name.trim() } : { token, nombre: name.trim(), activo: true }
+    if (!name.trim() || !token) return
+    if (tab === "municipios" && !estadoId) return
+    if (tab !== "estados" && tab !== "municipios") return
+    const isMunicipio = tab === "municipios"
+    const mutation = isMunicipio ? (editing ? UPDATE_MUNICIPIO : CREATE_MUNICIPIO) : (editing ? UPDATE_ESTADO : CREATE_ESTADO)
+    const variables = isMunicipio
+      ? (editing ? { token, id: editing.id, estadoId: Number(estadoId), nombre: name.trim() } : { token, estadoId: Number(estadoId), nombre: name.trim(), vigencia: true })
+      : (editing ? { token, id: editing.id, nombre: name.trim() } : { token, nombre: name.trim(), activo: true })
     const response = await fetch(process.env.NEXT_PUBLIC_GRAPHQL_URL ?? "/graphql", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: mutation.loc?.source.body, variables }),
     })
     const payload = await response.json()
-    const estado = payload.data?.[editing ? "updateEstado" : "createEstado"]?.data
-    if (!estado) return
-    const row = { id: estado.id, name: estado.nombre, active: estado.activo }
-    setData((all) => ({ ...all, estados: editing ? all.estados.map((item) => item.id === row.id ? row : item) : [...all.estados, row] }))
+    const record = payload.data?.[isMunicipio ? (editing ? "updateMunicipio" : "createMunicipio") : (editing ? "updateEstado" : "createEstado")]?.data
+    if (!record) return
+    const row = isMunicipio
+      ? { id: record.id, name: record.nombre, parent: `Estado #${record.estadoId}`, active: record.vigencia }
+      : { id: record.id, name: record.nombre, active: record.activo }
+    setData((all) => ({ ...all, [tab]: editing ? all[tab].map((item) => item.id === row.id ? row : item) : [...all[tab], row] }))
     setForm(false)
     setEditing(null)
     setName("")
+    setEstadoId("")
   }
-  const open = (row?: Row) => { setEditing(row ?? null); setName(row?.name ?? ""); setForm(true) }
-  const close = () => { setForm(false); setEditing(null); setName("") }
+  const open = (row?: Row) => {
+    setEditing(row ?? null)
+    setName(row?.name ?? "")
+    setEstadoId(row?.parent?.match(/#(\d+)/)?.[1] ?? (tab === "municipios" ? String(data.estados.find((item) => item.active)?.id ?? "") : ""))
+    setForm(true)
+  }
+  const close = () => { setForm(false); setEditing(null); setName(""); setEstadoId("") }
 
   return <div className={dark ? "dark min-h-screen bg-background" : "light min-h-screen bg-background"}>
     <Button variant="outline" size="icon" className="fixed bottom-5 right-5 z-40 rounded-full border-border bg-card/95 text-foreground shadow-lg backdrop-blur hover:bg-muted" onClick={() => setDark(!dark)} aria-label="Cambiar tema">{dark ? <Sun /> : <Moon />}</Button>
@@ -101,7 +116,8 @@ export default function GeografiaView() {
         {rows.length === 0 && <p className="p-10 text-center text-sm text-muted-foreground">No hay registros que coincidan con la búsqueda.</p>}
       </section>
     </main>
-    {form && <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 p-0 sm:items-center sm:p-6" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) close() }}><section role="dialog" aria-modal="true" aria-labelledby="geografia-modal-title" className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-t-2xl bg-white p-6 text-slate-900 shadow-2xl dark:bg-card dark:text-foreground sm:rounded-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-widest text-primary">Catálogo geográfico</p><h2 id="geografia-modal-title" className="mt-1 text-xl font-semibold text-slate-900 dark:text-foreground">{editing ? `Editar ${current.singular}` : `Nuevo ${current.singular}`}</h2><p className="mt-1 text-sm text-slate-600 dark:text-muted-foreground">Completa la información del registro.</p></div><Button variant="ghost" size="icon" className="text-slate-700 hover:text-slate-950 dark:text-foreground dark:hover:text-foreground" onClick={close} aria-label="Cerrar"><X /></Button></div><label className="mt-8 flex flex-col gap-2 text-sm font-medium text-slate-800 dark:text-foreground">Nombre<input autoFocus value={name} onChange={(event) => setName(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.nativeEvent.isComposing && event.keyCode !== 229) save() }} className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-slate-900 outline-none ring-offset-background placeholder:text-slate-400 focus:ring-2 focus:ring-ring dark:border-border dark:bg-background dark:text-foreground dark:placeholder:text-muted-foreground" placeholder={`Nombre del ${current.singular.toLowerCase()}`} /></label><div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"><Button variant="outline" className="border-slate-300 text-slate-800 hover:bg-slate-100 hover:text-slate-950 dark:border-border dark:text-foreground dark:hover:bg-muted" onClick={close}>Cancelar</Button><Button className="sm:min-w-32" disabled={!name.trim()} onClick={save}>{editing ? "Guardar cambios" : "Crear registro"}</Button></div></section></div>}
+    {form && <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 p-0 sm:items-center sm:p-6" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) close() }}><section role="dialog" aria-modal="true" aria-labelledby="geografia-modal-title" className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-t-2xl bg-white p-6 text-slate-900 shadow-2xl dark:bg-card dark:text-foreground sm:rounded-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-widest text-primary">Catálogo geográfico</p><h2 id="geografia-modal-title" className="mt-1 text-xl font-semibold text-slate-900 dark:text-foreground">{editing ? `Editar ${current.singular}` : `Nuevo ${current.singular}`}</h2><p className="mt-1 text-sm text-slate-600 dark:text-muted-foreground">Completa la información del registro.</p></div><Button variant="ghost" size="icon" className="text-slate-700 hover:text-slate-950 dark:text-foreground dark:hover:text-foreground" onClick={close} aria-label="Cerrar"><X /></Button></div>{tab === "municipios" && <label className="mt-8 flex flex-col gap-2 text-sm font-medium text-slate-800 dark:text-foreground">Estado<select value={estadoId} onChange={(event) => setEstadoId(event.target.value)} className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-slate-900 outline-none focus:ring-2 focus:ring-ring dark:border-border dark:bg-background dark:text-foreground"><option value="">Selecciona un estado vigente</option>{data.estados.filter((estado) => estado.active).map((estado) => <option key={estado.id} value={estado.id}>{estado.name}</option>)}</select></label>}
+      <label className={`${tab === "municipios" ? "mt-4" : "mt-8"} flex flex-col gap-2 text-sm font-medium text-slate-800 dark:text-foreground`}>Nombre<input autoFocus value={name} onChange={(event) => setName(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.nativeEvent.isComposing && event.keyCode !== 229) save() }} className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-slate-900 outline-none ring-offset-background placeholder:text-slate-400 focus:ring-2 focus:ring-ring dark:border-border dark:bg-background dark:text-foreground dark:placeholder:text-muted-foreground" placeholder={`Nombre del ${current.singular.toLowerCase()}`} /></label><div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"><Button variant="outline" className="border-slate-300 text-slate-800 hover:bg-slate-100 hover:text-slate-950 dark:border-border dark:text-foreground dark:hover:bg-muted" onClick={close}>Cancelar</Button><Button className="sm:min-w-32" disabled={!name.trim()} onClick={save}>{editing ? "Guardar cambios" : "Crear registro"}</Button></div></section></div>}
   </div>
 }
 
