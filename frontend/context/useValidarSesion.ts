@@ -24,11 +24,11 @@ const useValidarSesion = () => {
                 if (!token) {
                     console.log("No hay token");
 
-                    if (location?.startsWith("/dashboard")) {
-                        navigate.push("/");
-                    }
+                   // if (location?.startsWith("/dashboard")) {
+                  //      navigate.push("/");
+                  //  }
 
-                    logout();
+                   // logout();
                     return;
                 }
 
@@ -63,7 +63,7 @@ const useValidarSesion = () => {
 
                 // Si estamos en la página de inicio, redirigimos
                 if (location === "/") {
-                    navigate.push("/dashboard");
+                  //  navigate.push("/dashboard");
                 }
 
                 else {
