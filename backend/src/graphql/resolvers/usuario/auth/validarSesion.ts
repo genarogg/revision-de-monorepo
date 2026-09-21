@@ -12,6 +12,8 @@ const validarSesion = async (_: unknown, { token }: validarSesionArgs) => {
             return errorResponse({ message: 'Token inválido o expirado' });
         }
 
+        console.log("validar usuario: ", usuario)
+
         return successResponse({
             message: 'Token verificado exitosamente',
             data: usuario
