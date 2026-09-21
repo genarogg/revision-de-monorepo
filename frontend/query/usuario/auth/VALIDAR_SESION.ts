@@ -4,9 +4,14 @@ const VALIDAR_SESION = gql`
   query ValidarSesion($token: String!) {
     validarSesion(token: $token) {
       data {
-        token
+        id
+        primerNombre
+        primerApellido
+        avatar
+        telefono
+        cedula
+        email
         rol
-        
       }
     }
   }

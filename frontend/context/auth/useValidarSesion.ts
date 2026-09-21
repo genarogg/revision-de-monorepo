@@ -25,13 +25,12 @@ const useValidarSesion = () => {
                     if (location?.startsWith("/dashboard")) {
                         navigate.push("/");
                     }
-
+                        console.log("location: ", location);
                     logout();
                     return;
                 }
 
-                const graphqlUrl = process.env.NEXT_PUBLIC_GRAPHQL_URL || "/graphql";
-                const res = await fetch(graphqlUrl, {
+                const res = await fetch("/graphql", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -47,6 +46,7 @@ const useValidarSesion = () => {
                 console.log("validacion data: ", data);
 
                 if (errors?.length || !data?.validarSesion) {
+                    console.log("errors: ", errors);
                     logout();
                     return;
                 }
@@ -68,9 +68,9 @@ const useValidarSesion = () => {
                 }
 
             } catch (err) {
-                console.error("[v0] Error validando sesión:", err);
+                console.error(err);
+                console.log("err: ", err);
                 logout();
-            } finally {
                 setLoading(false);
             }
         };
