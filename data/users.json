@@ -1,5 +1,0 @@
-[
-  { "id": "usr-admin", "name": "Administrador", "role": "ADMIN", "token": "geo-admin-token-2026" },
-  { "id": "usr-editor", "name": "Editor geográfico", "role": "EDITOR", "token": "geo-editor-token-2026" },
-  { "id": "usr-reader", "name": "Consulta geográfica", "role": "READER", "token": "geo-reader-token-2026" }
-]
