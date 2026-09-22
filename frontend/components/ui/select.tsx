@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Check, ChevronDown } from "lucide-react"
-import * as SelectPrimitive from "@base-ui/react/select"
+import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { cn } from "@/lib/utils"
 
 const Select = SelectPrimitive.Root
@@ -31,8 +31,6 @@ const SelectContent = React.forwardRef<HTMLDivElement, React.ComponentPropsWitho
 )
 SelectContent.displayName = "SelectContent"
 
-const SelectGroup = SelectPrimitive.Group
-
 const SelectItem = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>>(
   ({ className, children, ...props }, ref) => (
     <SelectPrimitive.Item ref={ref} className={cn("relative flex cursor-default select-none items-center rounded-md py-2 pl-8 pr-2 text-sm outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground", className)} {...props}>
@@ -43,4 +41,4 @@ const SelectItem = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutR
 )
 SelectItem.displayName = "SelectItem"
 
-export { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue }
+export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue }
