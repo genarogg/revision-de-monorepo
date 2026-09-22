@@ -21,8 +21,8 @@ SelectTrigger.displayName = "SelectTrigger"
 const SelectContent = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<typeof SelectPrimitive.Popup>>(
   ({ className, children, ...props }, ref) => (
     <SelectPrimitive.Portal>
-      <SelectPrimitive.Positioner side="bottom" align="start" sideOffset={4} className="z-50 w-[var(--anchor-width)]">
-        <SelectPrimitive.Popup ref={ref} className={cn("max-h-72 min-w-[var(--anchor-width)] overflow-y-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg", className)} {...props}>
+      <SelectPrimitive.Positioner side="bottom" align="start" sideOffset={4} className="z-50 w-[var(--anchor-width)] max-w-[calc(100vw-2rem)]">
+        <SelectPrimitive.Popup ref={ref} className={cn("max-h-72 w-full min-w-0 overflow-y-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg", className)} {...props}>
           <SelectPrimitive.List>{children}</SelectPrimitive.List>
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>
